@@ -20,7 +20,7 @@ public class AntManager : MonoBehaviour
         }
     }
 
-    public void UpdateAnts(Texture2D texture)
+    public void UpdateAnts()
     {
         int antIdx;
         Ant ant;
@@ -55,11 +55,19 @@ public class AntManager : MonoBehaviour
             // Move then update ant
             ant.coordinates += ant.direction;
             ants[antIdx] = ant;
+        }
+    }
 
-            // Draw ant
-            texture.SetPixel((int) ant.coordinates.x, (int) ant.coordinates.y, CONST.antColor);
+    public List<Vector2> GetAntCoordinates()
+    {
+        int antIdx;
+        List<Vector2> antCoordinates = new List<Vector2>();
+
+        for (antIdx = 0; antIdx < ants.Count; antIdx++)
+        {
+            antCoordinates.Add(ants[antIdx].coordinates);
         }
 
-        texture.Apply();
+        return antCoordinates;
     }
 }

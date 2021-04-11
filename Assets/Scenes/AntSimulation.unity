@@ -214,9 +214,10 @@ GameObject:
   m_Component:
   - component: {fileID: 733453692}
   - component: {fileID: 733453691}
+  - component: {fileID: 733453694}
   - component: {fileID: 733453690}
   - component: {fileID: 733453693}
-  - component: {fileID: 733453694}
+  - component: {fileID: 733453695}
   m_Layer: 0
   m_Name: AntManager
   m_TagString: Untagged
@@ -326,6 +327,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cccc52f7e2807d940973bd8baa03190b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureManager: {fileID: 733453695}
   antManager: {fileID: 733453690}
   resourceManager: {fileID: 733453693}
   spriteRenderer: {fileID: 733453691}
+--- !u!114 &733453695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733453689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbbf21a2877f5e4082d50c076ad60af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  antManager: {fileID: 0}
