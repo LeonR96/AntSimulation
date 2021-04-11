@@ -131,22 +131,6 @@ public class TextureManager : MonoBehaviour
         }
     }
 
-    private void DrawAnts()
-    {
-        List<Vector2> antsCoordinates = antManager.GetAntsCoordinates();
-        int antIdx;
-        int i;
-        int j;
-
-        for (antIdx = 0; antIdx < antsCoordinates.Count; antIdx++)
-        {
-            i = (int) antsCoordinates[antIdx].x;
-            j = (int) antsCoordinates[antIdx].y;
-
-            texture.SetPixel(i, j, CONST.antColor);
-        }
-    }
-
     private void DrawResources()
     {
         List<Vector2Int> resourcesCoordinates = resourceManager.GetResourcesCoordinates();
@@ -161,6 +145,25 @@ public class TextureManager : MonoBehaviour
 
             texture.SetPixel(i, j, CONST.resourceColor);
         }
+    }
+
+    private void DrawAnts()
+    {
+        List<Vector2> antsCoordinates = antManager.GetAntsCoordinates();
+        int antIdx;
+        int i;
+        int j;
+        Vector2Int homeCoordinates = antManager.GetHomeCoordinates();
+
+        for (antIdx = 0; antIdx < antsCoordinates.Count; antIdx++)
+        {
+            i = (int) antsCoordinates[antIdx].x;
+            j = (int) antsCoordinates[antIdx].y;
+
+            texture.SetPixel(i, j, CONST.antColor);
+        }
+
+        texture.SetPixel(homeCoordinates.x, homeCoordinates.y, CONST.homeColor);
     }
 
     public void UpdateTexture()

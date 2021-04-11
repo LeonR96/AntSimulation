@@ -9,6 +9,7 @@ static class CONST
 
     public static Color antColor = Color.white;
     public static Color resourceColor = Color.yellow;
+    public static Color homeColor = Color.red;
 }
 
 public struct Ant

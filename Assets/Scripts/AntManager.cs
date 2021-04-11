@@ -96,4 +96,9 @@ public class AntManager : MonoBehaviour
 
         return antsCoordinates;
     }
+
+    public Vector2Int GetHomeCoordinates()
+    {
+        return new Vector2Int((int) homeCoordinates.x, (int) homeCoordinates.y);
+    }
 }
