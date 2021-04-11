@@ -3,8 +3,11 @@ using UnityEngine;
 
 static class CONST
 {
-    public const int width = 128;
-    public const int height = 128;
+    public static int width = 128;
+    public static int height = 128;
+
+    public static Color antColor = Color.white;
+    public static Color resourceColor = Color.yellow;
 }
 
 struct Ant
@@ -15,6 +18,7 @@ struct Ant
 
 public class AntManager : MonoBehaviour
 {
+    public ResourceManager resourceManager;
     public SpriteRenderer spriteRenderer;
     public int antQty;
 
@@ -29,6 +33,8 @@ public class AntManager : MonoBehaviour
         SetTexture();
 
         SetAnts();
+
+        resourceManager.InitializeResources(texture);
     }
 
     // Update is called once per frame
@@ -103,6 +109,7 @@ public class AntManager : MonoBehaviour
         int i;
         int j;
         Color pixelColor;
+        Color sidePixelColor;
         int binQty;
 
         for (i = 0; i < texture.width; i++)
@@ -110,45 +117,69 @@ public class AntManager : MonoBehaviour
             for (j = 0; j < texture.height; j++)
             {
                 pixelColor = oldTexture.GetPixel(i, j);
-                binQty = 1;
 
-                // Use pixel below if it exists
-                if (i != 0)
+                if (pixelColor != CONST.resourceColor)
                 {
-                    pixelColor += oldTexture.GetPixel(i - 1, j);
-                    binQty++;
+                    binQty = 1;
+
+                    // Use pixel below if it exists
+                    if (i != 0)
+                    {
+                        sidePixelColor = oldTexture.GetPixel(i - 1, j);
+
+                        if (sidePixelColor != CONST.resourceColor)
+                        {
+                            pixelColor += sidePixelColor;
+                            binQty++;
+                        }
+                    }
+
+                    // Use pixel on top if it exists
+                    if (i != (texture.height - 1))
+                    {
+                        sidePixelColor = oldTexture.GetPixel(i + 1, j);
+
+                        if (sidePixelColor != CONST.resourceColor)
+                        {
+                            pixelColor += sidePixelColor;
+                            binQty++;
+                        }
+                    }
+
+                    // Use pixel to the left if it exists
+                    if (j != 0)
+                    {
+                        sidePixelColor = oldTexture.GetPixel(i, j - 1);
+
+                        if (sidePixelColor != CONST.resourceColor)
+                        {
+                            pixelColor += sidePixelColor;
+                            binQty++;
+                        }
+                    }
+
+                    // Use pixel right if it exists
+                    if (j != (texture.width - 1))
+                    {
+                        sidePixelColor = oldTexture.GetPixel(i, j + 1);
+
+                        if (sidePixelColor != CONST.resourceColor)
+                        {
+                            pixelColor += sidePixelColor;
+                            binQty++;
+                        }
+                    }
+
+                    // Get mean pixel color
+                    pixelColor.r /= ((float) binQty);
+                    pixelColor.g /= ((float) binQty);
+                    pixelColor.b /= ((float) binQty);
+
+                    // Decay color
+                    pixelColor.r *= 0.9f;
+                    pixelColor.g *= 0.9f;
+                    pixelColor.b *= 0.9f;
                 }
-
-                // Use pixel on top if it exists
-                if (i != (texture.height - 1))
-                {
-                    pixelColor += oldTexture.GetPixel(i + 1, j);
-                    binQty++;
-                }
-
-                // Use pixel to the left if it exists
-                if (j != 0)
-                {
-                    pixelColor += oldTexture.GetPixel(i, j - 1);
-                    binQty++;
-                }
-
-                // Use pixel right if it exists
-                if (j != (texture.width - 1))
-                {
-                    pixelColor += oldTexture.GetPixel(i, j + 1);
-                    binQty++;
-                }
-
-                // Get mean pixel color
-                pixelColor.r /= ((float) binQty);
-                pixelColor.g /= ((float) binQty);
-                pixelColor.b /= ((float) binQty);
-
-                // Decay color
-                pixelColor.r *= 0.9f;
-                pixelColor.g *= 0.9f;
-                pixelColor.b *= 0.9f;
 
                 // Set pixel
                 texture.SetPixel(i, j, pixelColor);
@@ -193,7 +224,7 @@ public class AntManager : MonoBehaviour
             ants[antIdx] = ant;
 
             // Draw ant
-            texture.SetPixel((int) ant.coordinates.x, (int) ant.coordinates.y, Color.white);
+            texture.SetPixel((int) ant.coordinates.x, (int) ant.coordinates.y, CONST.antColor);
         }
     }
 
