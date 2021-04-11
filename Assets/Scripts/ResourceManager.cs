@@ -7,8 +7,9 @@ public class ResourceManager : MonoBehaviour
     public int clusterQty;
 
     private float clusterRadiusSquare = 100.0f;
+    private List<Vector2Int> resourcesCoordinates = new List<Vector2Int>();
 
-    public void InitializeResources(Texture2D texture)
+    public void InitializeResources()
     {
         int clusterIdx;
         List<Vector2Int> clusterCenters = new List<Vector2Int>();
@@ -41,15 +42,18 @@ public class ResourceManager : MonoBehaviour
 
                     distanceToClusterCenterSquare = xOffset * xOffset + yOffset * yOffset;
 
-                    // Color resource pixels
+                    // Store resource pixels
                     if (distanceToClusterCenterSquare < clusterRadiusSquare)
                     {
-                        texture.SetPixel(i, j, CONST.resourceColor);
+                        resourcesCoordinates.Add(new Vector2Int(i, j));
                     }
                 }
             }
         }
+    }
 
-        texture.Apply();
+    public List<Vector2Int> GetResourcesCoordinates()
+    {
+        return resourcesCoordinates;
     }
 }

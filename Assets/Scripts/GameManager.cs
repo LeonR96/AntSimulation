@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
 
         antManager.InitializeAnts();
 
-        resourceManager.InitializeResources(textureManager.GetTexture());
+        resourceManager.InitializeResources();
 
         AssignManagers();
 
@@ -68,5 +68,6 @@ public class GameManager : MonoBehaviour
     private void AssignManagers()
     {
         textureManager.antManager = antManager;
+        textureManager.resourceManager = resourceManager;
     }
 }

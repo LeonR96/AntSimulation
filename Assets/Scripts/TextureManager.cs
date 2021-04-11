@@ -5,6 +5,7 @@ using UnityEngine;
 public class TextureManager : MonoBehaviour
 {
     public AntManager antManager;
+    public ResourceManager resourceManager;
 
     private Texture2D texture;
 
@@ -152,6 +153,22 @@ public class TextureManager : MonoBehaviour
         }
     }
 
+    private void DrawResources()
+    {
+        List<Vector2Int> resourcesCoordinates = resourceManager.GetResourcesCoordinates();
+        int resourceIdx;
+        int i;
+        int j;
+
+        for (resourceIdx = 0; resourceIdx < resourcesCoordinates.Count; resourceIdx++)
+        {
+            i = resourcesCoordinates[resourceIdx].x;
+            j = resourcesCoordinates[resourceIdx].y;
+
+            texture.SetPixel(i, j, CONST.resourceColor);
+        }
+    }
+
     public void UpdateTexture()
     {
         // Store old texture as a baseline for the update
@@ -159,6 +176,9 @@ public class TextureManager : MonoBehaviour
 
         // Blur old texture
         BlurTexture(oldTexture);
+
+        // Draw resources
+        DrawResources();
 
         // Draw ants
         DrawAnts();
