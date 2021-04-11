@@ -6,6 +6,7 @@ public class AntManager : MonoBehaviour
     public int antQty;
 
     private List<Ant> ants = new List<Ant>();
+    private Vector2 homeCoordinates = new Vector2();
 
     public void InitializeAnts()
     {
@@ -15,9 +16,13 @@ public class AntManager : MonoBehaviour
 
             newAnt.coordinates = new Vector2(Random.Range(0.0f, (float) CONST.width), Random.Range(0.0f, (float) CONST.height));
             newAnt.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+            newAnt.hasResource = false;
 
             ants.Add(newAnt);
         }
+
+        homeCoordinates.x = CONST.width / 2;
+        homeCoordinates.y = CONST.height / 2;
     }
 
     public void UpdateAnts()
@@ -58,16 +63,36 @@ public class AntManager : MonoBehaviour
         }
     }
 
-    public List<Vector2> GetAntCoordinates()
+    public List<Vector2> GetAntsCoordinates()
     {
         int antIdx;
-        List<Vector2> antCoordinates = new List<Vector2>();
+        List<Vector2> antsCoordinates = new List<Vector2>();
 
         for (antIdx = 0; antIdx < ants.Count; antIdx++)
         {
-            antCoordinates.Add(ants[antIdx].coordinates);
+            antsCoordinates.Add(ants[antIdx].coordinates);
         }
 
-        return antCoordinates;
+        return antsCoordinates;
+    }
+
+    public void SetAntResource(int antIdx,
+                               bool hasResource)
+    {
+        Ant ant = ants[antIdx];
+
+        ant.hasResource = hasResource;
+
+        // Update direction based on new resource status
+        if (hasResource == true)
+        {
+            ant.direction = (homeCoordinates - ant.coordinates).normalized;
+        }
+        if (hasResource == false)
+        {
+            ant.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+        }
+
+        ants[antIdx] = ant;
     }
 }

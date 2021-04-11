@@ -132,14 +132,23 @@ public class TextureManager : MonoBehaviour
 
     private void DrawAnts()
     {
-        List<Vector2> antCoordinates = antManager.GetAntCoordinates();
+        List<Vector2> antsCoordinates = antManager.GetAntsCoordinates();
         int antIdx;
+        int i;
+        int j;
 
-        for (antIdx = 0; antIdx < antCoordinates.Count; antIdx++)
+        for (antIdx = 0; antIdx < antsCoordinates.Count; antIdx++)
         {
-            texture.SetPixel(((int) antCoordinates[antIdx].x),
-                             ((int) antCoordinates[antIdx].y),
-                             CONST.antColor);
+            i = (int) antsCoordinates[antIdx].x;
+            j = (int) antsCoordinates[antIdx].y;
+
+            // Set ant resource if it is located on a resource pixel
+            if (texture.GetPixel(i, j) == CONST.resourceColor)
+            {
+                antManager.SetAntResource(antIdx, true);
+            }
+
+            texture.SetPixel(i, j, CONST.antColor);
         }
     }
 

@@ -15,6 +15,7 @@ public struct Ant
 {
     public Vector2 coordinates;
     public Vector2 direction;
+    public bool hasResource;
 };
 
 public class GameManager : MonoBehaviour
