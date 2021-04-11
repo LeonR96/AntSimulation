@@ -215,6 +215,8 @@ GameObject:
   - component: {fileID: 733453692}
   - component: {fileID: 733453691}
   - component: {fileID: 733453690}
+  - component: {fileID: 733453693}
+  - component: {fileID: 733453694}
   m_Layer: 0
   m_Name: AntManager
   m_TagString: Untagged
@@ -234,7 +236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0da24d46c6358d14db27323e41d1a98b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 733453691}
   antQty: 14
 --- !u!212 &733453691
 SpriteRenderer:
@@ -300,3 +301,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &733453693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733453689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 461595e098cfada48852ead13284756f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clusterQty: 3
+--- !u!114 &733453694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733453689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cccc52f7e2807d940973bd8baa03190b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  antManager: {fileID: 733453690}
+  resourceManager: {fileID: 733453693}
+  spriteRenderer: {fileID: 733453691}
