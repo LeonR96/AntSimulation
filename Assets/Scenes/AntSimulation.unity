@@ -237,7 +237,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0da24d46c6358d14db27323e41d1a98b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  antQty: 14
+  resourceManager: {fileID: 0}
+  antQty: 100
 --- !u!212 &733453691
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -344,3 +345,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   antManager: {fileID: 0}
+  resourceManager: {fileID: 0}

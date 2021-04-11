@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class AntManager : MonoBehaviour
 {
+    public ResourceManager resourceManager;
     public int antQty;
 
     private List<Ant> ants = new List<Ant>();
@@ -59,6 +60,26 @@ public class AntManager : MonoBehaviour
 
             // Move then update ant
             ant.coordinates += ant.direction;
+
+            // Set ant resource if it is located on a resource pixel
+            if (resourceManager.GetResourceAtCoordinates(ant.coordinates) == true)
+            {
+                if (ant.hasResource == false)
+                {
+                    ant.hasResource = true;
+
+                    ant.direction = (homeCoordinates - ant.coordinates).normalized;
+                    resourceManager.RemoveResourceAtCoordinates(ant.coordinates);
+                }
+            }
+
+            if ((ant.hasResource == true) && ((ant.coordinates - homeCoordinates).magnitude < 1.0f))
+            {
+                ant.hasResource = false;
+
+                ant.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+            }
+
             ants[antIdx] = ant;
         }
     }
@@ -74,25 +95,5 @@ public class AntManager : MonoBehaviour
         }
 
         return antsCoordinates;
-    }
-
-    public void SetAntResource(int antIdx,
-                               bool hasResource)
-    {
-        Ant ant = ants[antIdx];
-
-        ant.hasResource = hasResource;
-
-        // Update direction based on new resource status
-        if (hasResource == true)
-        {
-            ant.direction = (homeCoordinates - ant.coordinates).normalized;
-        }
-        if (hasResource == false)
-        {
-            ant.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
-        }
-
-        ants[antIdx] = ant;
     }
 }

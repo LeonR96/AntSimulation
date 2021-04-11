@@ -7,7 +7,7 @@ public class ResourceManager : MonoBehaviour
     public int clusterQty;
 
     private float clusterRadiusSquare = 100.0f;
-    private List<Vector2Int> resourcesCoordinates = new List<Vector2Int>();
+    private List<List<bool>> resourceStatuses = new List<List<bool>>();
 
     public void InitializeResources()
     {
@@ -31,6 +31,18 @@ public class ResourceManager : MonoBehaviour
 
         for (i = 0; i < CONST.width; i++)
         {
+            List<bool> newResourceStatuses = new List<bool>();
+
+            for (j = 0; j < CONST.height; j++)
+            {
+                newResourceStatuses.Add(false);
+            }
+
+            resourceStatuses.Add(newResourceStatuses);
+        }
+
+        for (i = 0; i < CONST.width; i++)
+        {
             for (j = 0; j < CONST.height; j++)
             {
                 for (clusterIdx = 0; clusterIdx < clusterQty; clusterIdx++)
@@ -45,7 +57,7 @@ public class ResourceManager : MonoBehaviour
                     // Store resource pixels
                     if (distanceToClusterCenterSquare < clusterRadiusSquare)
                     {
-                        resourcesCoordinates.Add(new Vector2Int(i, j));
+                        resourceStatuses[i][j] = true;
                     }
                 }
             }
@@ -54,6 +66,31 @@ public class ResourceManager : MonoBehaviour
 
     public List<Vector2Int> GetResourcesCoordinates()
     {
+        List<Vector2Int> resourcesCoordinates = new List<Vector2Int>();
+        int i;
+        int j;
+
+        for (i = 0; i < CONST.width; i++)
+        {
+            for (j = 0; j < CONST.height; j++)
+            {
+                if (resourceStatuses[i][j] == true)
+                {
+                    resourcesCoordinates.Add(new Vector2Int(i, j));
+                }
+            }
+        }
+
         return resourcesCoordinates;
+    }
+
+    public bool GetResourceAtCoordinates(Vector2 coordinates)
+    {
+        return resourceStatuses[(int) coordinates.x][(int) coordinates.y];
+    }
+
+    public void RemoveResourceAtCoordinates(Vector2 coordinates)
+    {
+        resourceStatuses[(int) coordinates.x][(int) coordinates.y] = false;
     }
 }

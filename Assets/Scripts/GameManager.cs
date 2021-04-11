@@ -67,6 +67,8 @@ public class GameManager : MonoBehaviour
 
     private void AssignManagers()
     {
+        antManager.resourceManager = resourceManager;
+
         textureManager.antManager = antManager;
         textureManager.resourceManager = resourceManager;
     }

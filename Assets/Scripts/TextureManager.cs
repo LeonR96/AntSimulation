@@ -143,12 +143,6 @@ public class TextureManager : MonoBehaviour
             i = (int) antsCoordinates[antIdx].x;
             j = (int) antsCoordinates[antIdx].y;
 
-            // Set ant resource if it is located on a resource pixel
-            if (texture.GetPixel(i, j) == CONST.resourceColor)
-            {
-                antManager.SetAntResource(antIdx, true);
-            }
-
             texture.SetPixel(i, j, CONST.antColor);
         }
     }
