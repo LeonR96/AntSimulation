@@ -16,7 +16,8 @@ public class AntManager : MonoBehaviour
             Ant newAnt = new Ant();
 
             newAnt.coordinates = new Vector2(Random.Range(0.0f, (float) CONST.width), Random.Range(0.0f, (float) CONST.height));
-            newAnt.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+            newAnt.intention = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+            newAnt.direction = newAnt.intention;
             newAnt.hasResource = false;
 
             ants.Add(newAnt);
@@ -30,6 +31,7 @@ public class AntManager : MonoBehaviour
     {
         int antIdx;
         Ant ant;
+        float newDirectionAngle;
 
         for (antIdx = 0; antIdx < ants.Count; antIdx++)
         {
@@ -40,25 +42,38 @@ public class AntManager : MonoBehaviour
             {
                 ant.direction.x = Random.Range(0.0f, 1.0f);
                 ant.direction.Normalize();
+                ant.intention = ant.direction;
             }
             else if (ant.coordinates.x > ((float) CONST.width - 2.0f))
             {
                 ant.direction.x = Random.Range(0.0f, -1.0f);
                 ant.direction.Normalize();
+                ant.intention = ant.direction;
             }
 
             if (ant.coordinates.y < 1.0f)
             {
                 ant.direction.y = Random.Range(0.0f, 1.0f);
                 ant.direction.Normalize();
+                ant.intention = ant.direction;
             }
             else if (ant.coordinates.y > ((float) CONST.height - 2.0f))
             {
                 ant.direction.y = Random.Range(0.0f, -1.0f);
                 ant.direction.Normalize();
+                ant.intention = ant.direction;
             }
 
-            // Move then update ant
+            // Rotate ant if necessary, then move it
+            if (ant.direction != ant.intention)
+            {
+                newDirectionAngle = Mathf.MoveTowardsAngle(Mathf.Atan2(ant.direction.y, ant.direction.x),
+                                                           Mathf.Atan2(ant.intention.y, ant.intention.x),
+                                                           CONST.antYawRate * Time.deltaTime);
+
+                ant.direction = new Vector2(Mathf.Cos(newDirectionAngle), Mathf.Sin(newDirectionAngle));
+            }
+
             ant.coordinates += ant.direction;
 
             // Set ant resource if it is located on a resource pixel
@@ -68,7 +83,7 @@ public class AntManager : MonoBehaviour
                 {
                     ant.hasResource = true;
 
-                    ant.direction = (homeCoordinates - ant.coordinates).normalized;
+                    ant.intention = (homeCoordinates - ant.coordinates).normalized;
                     resourceManager.RemoveResourceAtCoordinates(ant.coordinates);
                 }
             }
@@ -77,7 +92,7 @@ public class AntManager : MonoBehaviour
             {
                 ant.hasResource = false;
 
-                ant.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+                ant.intention = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
             }
 
             ants[antIdx] = ant;

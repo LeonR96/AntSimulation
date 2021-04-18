@@ -12,12 +12,15 @@ static class CONST
     public static Color antColor = Color.white;
     public static Color resourceColor = Color.yellow;
     public static Color homeColor = Color.red;
+
+    public static float antYawRate = 90.0f * Mathf.Deg2Rad;
 }
 
 public struct Ant
 {
     public Vector2 coordinates;
     public Vector2 direction;
+    public Vector2 intention;
     public bool hasResource;
 };
 
