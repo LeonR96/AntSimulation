@@ -16,7 +16,8 @@ public class AntManager : MonoBehaviour
             Ant newAnt = new Ant();
 
             newAnt.coordinates = new Vector2(Random.Range(0.0f, (float) CONST.width), Random.Range(0.0f, (float) CONST.height));
-            newAnt.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+            newAnt.intention = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+            newAnt.direction = newAnt.intention;
             newAnt.hasResource = false;
 
             ants.Add(newAnt);
@@ -26,60 +27,101 @@ public class AntManager : MonoBehaviour
         homeCoordinates.y = CONST.height / 2;
     }
 
+    private void BounceAnt(ref Ant ant)
+    {
+        bool didAntBounce = false;
+
+        // Randomize ant direction if it reaches an edge
+        if (ant.coordinates.x < 1.0f)
+        {
+            ant.direction.x = Random.Range(0.0f, 1.0f);
+            didAntBounce = true;
+        }
+        else if (ant.coordinates.x > ((float) CONST.width - 2.0f))
+        {
+            ant.direction.x = Random.Range(0.0f, -1.0f);
+            didAntBounce = true;
+        }
+
+        if (ant.coordinates.y < 1.0f)
+        {
+            ant.direction.y = Random.Range(0.0f, 1.0f);
+            didAntBounce = true;
+        }
+        else if (ant.coordinates.y > ((float) CONST.height - 2.0f))
+        {
+            ant.direction.y = Random.Range(0.0f, -1.0f);
+            didAntBounce = true;
+        }
+
+        // Re-normalize ant direction and reset its intention
+        if (didAntBounce == true)
+        {
+            ant.direction.Normalize();
+            ant.intention = ant.direction;
+        }
+    }
+
     public void UpdateAnts()
     {
         int antIdx;
         Ant ant;
+        float directionAngle;
+        float intentionAngle;
+        float deltaAngle;
+        float newDirectionAngle;
 
         for (antIdx = 0; antIdx < ants.Count; antIdx++)
         {
             ant = ants[antIdx];
 
-            // Randomize ant direction one it reaches an edge
-            if (ant.coordinates.x < 1.0f)
+            // Handle limit rebound if necessary
+            BounceAnt(ref ant);
+
+            // Make sure the ant intends to go home if it is carrying a resource
+            if (ant.hasResource == true)
             {
-                ant.direction.x = Random.Range(0.0f, 1.0f);
-                ant.direction.Normalize();
-            }
-            else if (ant.coordinates.x > ((float) CONST.width - 2.0f))
-            {
-                ant.direction.x = Random.Range(0.0f, -1.0f);
-                ant.direction.Normalize();
+                ant.intention = (homeCoordinates - ant.coordinates).normalized;
             }
 
-            if (ant.coordinates.y < 1.0f)
+            // Rotate ant if necessary
+            if (ant.direction != ant.intention)
             {
-                ant.direction.y = Random.Range(0.0f, 1.0f);
-                ant.direction.Normalize();
-            }
-            else if (ant.coordinates.y > ((float) CONST.height - 2.0f))
-            {
-                ant.direction.y = Random.Range(0.0f, -1.0f);
-                ant.direction.Normalize();
+                directionAngle = Mathf.Atan2(ant.direction.y, ant.direction.x);
+                intentionAngle = Mathf.Atan2(ant.intention.y, ant.intention.x);
+
+                deltaAngle = Mathf.Clamp(Mathf.DeltaAngle(directionAngle, intentionAngle),
+                                         -CONST.antYawRate * CONST.deltaTime,
+                                         CONST.antYawRate * CONST.deltaTime);
+
+                newDirectionAngle = directionAngle + deltaAngle;
+
+                ant.direction = new Vector2(Mathf.Cos(newDirectionAngle), Mathf.Sin(newDirectionAngle));
             }
 
-            // Move then update ant
+            // Move ant
             ant.coordinates += ant.direction;
 
-            // Set ant resource if it is located on a resource pixel
-            if (resourceManager.GetResourceAtCoordinates(ant.coordinates) == true)
+            // Pick up resource if the ant lands on it and has none yet
+            if (    ( ant.hasResource                                           == false )
+                 && ( resourceManager.GetResourceAtCoordinates(ant.coordinates) == true  ) )
             {
-                if (ant.hasResource == false)
-                {
-                    ant.hasResource = true;
+                ant.hasResource = true;
 
-                    ant.direction = (homeCoordinates - ant.coordinates).normalized;
-                    resourceManager.RemoveResourceAtCoordinates(ant.coordinates);
-                }
+                resourceManager.RemoveResourceAtCoordinates(ant.coordinates);
             }
 
-            if ((ant.hasResource == true) && ((ant.coordinates - homeCoordinates).magnitude < 1.0f))
+            // Drop resource and reset intention once brought back home
+            if (    ( ant.hasResource                               == true )
+                 && ( (ant.coordinates - homeCoordinates).magnitude  < 1.0f ) )
             {
                 ant.hasResource = false;
 
-                ant.direction = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+                ant.intention = new Vector2(Random.Range(-1.0f, 1.0f),
+                                            Random.Range(-1.0f, 1.0f)).normalized;
             }
 
+            // Update ant
             ants[antIdx] = ant;
         }
     }

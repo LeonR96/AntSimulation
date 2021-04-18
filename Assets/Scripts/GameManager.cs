@@ -5,19 +5,24 @@ using UnityEngine;
 static class CONST
 {
     public static int width = 128;
-    public static int height = 128;
+    public static int height = width;
 
     public static float bluringFactor = 0.9f;
 
     public static Color antColor = Color.white;
     public static Color resourceColor = Color.yellow;
     public static Color homeColor = Color.red;
+
+    public static float antYawRate = 180.0f * Mathf.Deg2Rad;
+
+    public static float deltaTime = 0.0f;
 }
 
 public struct Ant
 {
     public Vector2 coordinates;
     public Vector2 direction;
+    public Vector2 intention;
     public bool hasResource;
 };
 
@@ -28,7 +33,7 @@ public class GameManager : MonoBehaviour
     public ResourceManager resourceManager;
     public SpriteRenderer spriteRenderer;
 
-    private float updatePeriod = 0.01f;
+    private float updatePeriod = 0.05f;
     private float lastUpdateTimestamp;
 
     // Start is called before the first frame update
@@ -41,9 +46,6 @@ public class GameManager : MonoBehaviour
         resourceManager.InitializeResources();
 
         AssignManagers();
-
-        // Set initial update timestamp
-        lastUpdateTimestamp = Time.time;
     }
 
     // Update is called once per frame
@@ -54,6 +56,10 @@ public class GameManager : MonoBehaviour
             antManager.UpdateAnts();
 
             textureManager.UpdateTexture();
+
+            // Set initial update timestamp
+            CONST.deltaTime = Time.time - lastUpdateTimestamp;
+            lastUpdateTimestamp = Time.time;
         }
     }
 
