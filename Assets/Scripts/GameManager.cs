@@ -13,7 +13,9 @@ static class CONST
     public static Color resourceColor = Color.yellow;
     public static Color homeColor = Color.red;
 
-    public static float antYawRate = 90.0f * Mathf.Deg2Rad;
+    public static float antYawRate = 180.0f * Mathf.Deg2Rad;
+
+    public static float deltaTime = 0.0f;
 }
 
 public struct Ant
@@ -56,11 +58,8 @@ public class GameManager : MonoBehaviour
             textureManager.UpdateTexture();
 
             // Set initial update timestamp
+            CONST.deltaTime = Time.time - lastUpdateTimestamp;
             lastUpdateTimestamp = Time.time;
-        }
-        else
-        {
-            print("miss");
         }
     }
 
