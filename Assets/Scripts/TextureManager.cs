@@ -48,13 +48,15 @@ public class TextureManager : MonoBehaviour
         return oldTexture;
     }
 
-    private void BlurTexture(Texture2D oldTexture)
+    private void BlurTexture()
     {
+        Texture2D oldTexture = StoreTexture();
         int i;
         int j;
         Color pixelColor;
         Color sidePixelColor;
         int binQty;
+        float colorScaling;
 
         for (i = 0; i < texture.width; i++)
         {
@@ -76,17 +78,17 @@ public class TextureManager : MonoBehaviour
                             pixelColor += sidePixelColor;
                             binQty++;
                         }
-                    }
 
-                    // Use pixel on top if it exists
-                    if (i != (texture.height - 1))
-                    {
-                        sidePixelColor = oldTexture.GetPixel(i + 1, j);
-
-                        if (sidePixelColor != CONST.resourceColor)
+                        // Use pixel on top if it exists
+                        if (i != (texture.height - 1))
                         {
-                            pixelColor += sidePixelColor;
-                            binQty++;
+                            sidePixelColor = oldTexture.GetPixel(i + 1, j);
+
+                            if (sidePixelColor != CONST.resourceColor)
+                            {
+                                pixelColor += sidePixelColor;
+                                binQty++;
+                            }
                         }
                     }
 
@@ -100,29 +102,27 @@ public class TextureManager : MonoBehaviour
                             pixelColor += sidePixelColor;
                             binQty++;
                         }
-                    }
 
-                    // Use pixel right if it exists
-                    if (j != (texture.width - 1))
-                    {
-                        sidePixelColor = oldTexture.GetPixel(i, j + 1);
-
-                        if (sidePixelColor != CONST.resourceColor)
+                        // Use pixel right if it exists
+                        if (j != (texture.width - 1))
                         {
-                            pixelColor += sidePixelColor;
-                            binQty++;
+                            sidePixelColor = oldTexture.GetPixel(i, j + 1);
+
+                            if (sidePixelColor != CONST.resourceColor)
+                            {
+                                pixelColor += sidePixelColor;
+                                binQty++;
+                            }
                         }
                     }
 
-                    // Get mean pixel color
-                    pixelColor.r /= ((float) binQty);
-                    pixelColor.g /= ((float) binQty);
-                    pixelColor.b /= ((float) binQty);
+                    // Compute scaling factor
+                    colorScaling = CONST.bluringFactor / ((float) binQty);
 
-                    // Decay color
-                    pixelColor.r *= 0.9f;
-                    pixelColor.g *= 0.9f;
-                    pixelColor.b *= 0.9f;
+                    // Mean and decay pixel color
+                    pixelColor.r *= colorScaling;
+                    pixelColor.g *= colorScaling;
+                    pixelColor.b *= colorScaling;
                 }
 
                 // Set pixel
@@ -168,11 +168,8 @@ public class TextureManager : MonoBehaviour
 
     public void UpdateTexture()
     {
-        // Store old texture as a baseline for the update
-        Texture2D oldTexture = StoreTexture();
-
-        // Blur old texture
-        BlurTexture(oldTexture);
+        // Blur texture
+        BlurTexture();
 
         // Draw resources
         DrawResources();

@@ -7,6 +7,8 @@ static class CONST
     public static int width = 128;
     public static int height = 128;
 
+    public static float bluringFactor = 0.9f;
+
     public static Color antColor = Color.white;
     public static Color resourceColor = Color.yellow;
     public static Color homeColor = Color.red;
