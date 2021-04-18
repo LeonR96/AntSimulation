@@ -238,7 +238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceManager: {fileID: 0}
-  antQty: 100
+  antQty: 128
 --- !u!212 &733453691
 SpriteRenderer:
   m_ObjectHideFlags: 0

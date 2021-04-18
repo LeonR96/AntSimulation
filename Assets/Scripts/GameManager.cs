@@ -5,7 +5,7 @@ using UnityEngine;
 static class CONST
 {
     public static int width = 128;
-    public static int height = 128;
+    public static int height = width;
 
     public static float bluringFactor = 0.9f;
 
@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     public ResourceManager resourceManager;
     public SpriteRenderer spriteRenderer;
 
-    private float updatePeriod = 0.01f;
+    private float updatePeriod = 0.05f;
     private float lastUpdateTimestamp;
 
     // Start is called before the first frame update
@@ -44,9 +44,6 @@ public class GameManager : MonoBehaviour
         resourceManager.InitializeResources();
 
         AssignManagers();
-
-        // Set initial update timestamp
-        lastUpdateTimestamp = Time.time;
     }
 
     // Update is called once per frame
@@ -57,6 +54,13 @@ public class GameManager : MonoBehaviour
             antManager.UpdateAnts();
 
             textureManager.UpdateTexture();
+
+            // Set initial update timestamp
+            lastUpdateTimestamp = Time.time;
+        }
+        else
+        {
+            print("miss");
         }
     }
 
