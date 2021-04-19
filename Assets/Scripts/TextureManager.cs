@@ -133,17 +133,14 @@ public class TextureManager : MonoBehaviour
 
     private void DrawResources()
     {
-        List<Vector2Int> resourcesCoordinates = resourceManager.GetResourcesCoordinates();
-        int resourceIdx;
-        int i;
-        int j;
+        Texture2D resourcesTexture = resourceManager.GetResourcesTexture();
 
-        for (resourceIdx = 0; resourceIdx < resourcesCoordinates.Count; resourceIdx++)
+        for (int i = 0; i < CONST.width; i++)
         {
-            i = resourcesCoordinates[resourceIdx].x;
-            j = resourcesCoordinates[resourceIdx].y;
-
-            texture.SetPixel(i, j, COLOR.resource);
+            for (int j = 0; j < CONST.height; j++)
+            {
+                texture.SetPixel(i, j, texture.GetPixel(i, j) + resourcesTexture.GetPixel(i, j));
+            }
         }
     }
 

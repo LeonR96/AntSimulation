@@ -16,6 +16,7 @@ static class CONST
 
 static class COLOR
 {
+    public static Color empty = Color.black;
     public static Color ant = Color.white;
     public static Color pheroToFood = Color.red;
     public static Color pheroToHome = Color.blue;
