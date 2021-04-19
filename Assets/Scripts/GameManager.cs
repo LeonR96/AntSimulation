@@ -9,13 +9,18 @@ static class CONST
 
     public static float bluringFactor = 0.9f;
 
-    public static Color antColor = Color.white;
-    public static Color resourceColor = Color.yellow;
-    public static Color homeColor = Color.red;
-
     public static float antYawRate = 180.0f * Mathf.Deg2Rad;
 
     public static float deltaTime = 0.0f;
+}
+
+static class COLOR
+{
+    public static Color ant = Color.white;
+    public static Color pheroToFood = Color.red;
+    public static Color pheroToHome = Color.blue;
+    public static Color resource = Color.yellow;
+    public static Color home = Color.green;
 }
 
 public struct Ant

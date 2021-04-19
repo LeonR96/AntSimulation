@@ -64,7 +64,7 @@ public class TextureManager : MonoBehaviour
             {
                 pixelColor = oldTexture.GetPixel(i, j);
 
-                if (pixelColor != CONST.resourceColor)
+                if (pixelColor != COLOR.resource)
                 {
                     binQty = 1;
 
@@ -73,7 +73,7 @@ public class TextureManager : MonoBehaviour
                     {
                         sidePixelColor = oldTexture.GetPixel(i - 1, j);
 
-                        if (sidePixelColor != CONST.resourceColor)
+                        if (sidePixelColor != COLOR.resource)
                         {
                             pixelColor += sidePixelColor;
                             binQty++;
@@ -84,7 +84,7 @@ public class TextureManager : MonoBehaviour
                         {
                             sidePixelColor = oldTexture.GetPixel(i + 1, j);
 
-                            if (sidePixelColor != CONST.resourceColor)
+                            if (sidePixelColor != COLOR.resource)
                             {
                                 pixelColor += sidePixelColor;
                                 binQty++;
@@ -97,7 +97,7 @@ public class TextureManager : MonoBehaviour
                     {
                         sidePixelColor = oldTexture.GetPixel(i, j - 1);
 
-                        if (sidePixelColor != CONST.resourceColor)
+                        if (sidePixelColor != COLOR.resource)
                         {
                             pixelColor += sidePixelColor;
                             binQty++;
@@ -108,7 +108,7 @@ public class TextureManager : MonoBehaviour
                         {
                             sidePixelColor = oldTexture.GetPixel(i, j + 1);
 
-                            if (sidePixelColor != CONST.resourceColor)
+                            if (sidePixelColor != COLOR.resource)
                             {
                                 pixelColor += sidePixelColor;
                                 binQty++;
@@ -143,7 +143,7 @@ public class TextureManager : MonoBehaviour
             i = resourcesCoordinates[resourceIdx].x;
             j = resourcesCoordinates[resourceIdx].y;
 
-            texture.SetPixel(i, j, CONST.resourceColor);
+            texture.SetPixel(i, j, COLOR.resource);
         }
     }
 
@@ -160,10 +160,10 @@ public class TextureManager : MonoBehaviour
             i = (int) antsCoordinates[antIdx].x;
             j = (int) antsCoordinates[antIdx].y;
 
-            texture.SetPixel(i, j, CONST.antColor);
+            texture.SetPixel(i, j, COLOR.ant);
         }
 
-        texture.SetPixel(homeCoordinates.x, homeCoordinates.y, CONST.homeColor);
+        texture.SetPixel(homeCoordinates.x, homeCoordinates.y, COLOR.home);
     }
 
     public void UpdateTexture()
