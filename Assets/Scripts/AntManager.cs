@@ -145,7 +145,7 @@ public class AntManager : MonoBehaviour
         pheromoneTexture = bluredTexture;
     }
 
-    public void UpdateAnts()
+    private void MoveAnts()
     {
         int antIdx;
         Ant ant;
@@ -153,8 +153,6 @@ public class AntManager : MonoBehaviour
         float intentionAngle;
         float deltaAngle;
         float newDirectionAngle;
-
-        UpdatePheromones();
 
         for (antIdx = 0; antIdx < ants.Count; antIdx++)
         {
@@ -222,6 +220,13 @@ public class AntManager : MonoBehaviour
             // Update ant
             ants[antIdx] = ant;
         }
+    }
+
+    public void UpdateAnts()
+    {
+        UpdatePheromones();
+
+        MoveAnts();
     }
 
     public List<Vector2> GetAntsCoordinates()
