@@ -7,9 +7,13 @@ public class AntManager : MonoBehaviour
     public int antQty;
 
     private List<Ant> ants = new List<Ant>();
+    private Texture2D pheromoneTexture;
 
     public void InitializeAnts()
     {
+        Texture2D newTexture = new Texture2D(CONST.width,
+                                             CONST.height);
+
         for (int antIdx = 0 ; antIdx < antQty; antIdx++)
         {
             Ant newAnt = new Ant();
@@ -21,6 +25,18 @@ public class AntManager : MonoBehaviour
 
             ants.Add(newAnt);
         }
+
+        // Draw all pheromone pixels black
+        for (int i = 0; i < CONST.width; i++)
+        {
+            for (int j = 0; j < CONST.height; j++)
+            {
+                newTexture.SetPixel(i, j, COLOR.empty);
+            }
+        }
+
+        // Store pheromone texture
+        pheromoneTexture = newTexture;
     }
 
     private void BounceAnt(ref Ant ant)
@@ -117,6 +133,19 @@ public class AntManager : MonoBehaviour
                                             Random.Range(-1.0f, 1.0f)).normalized;
             }
 
+            if (ant.hasResource == true)
+            {
+                pheromoneTexture.SetPixel((int) ant.coordinates.x,
+                                          (int) ant.coordinates.y,
+                                          COLOR.pheroToHome);
+            }
+            else
+            {
+                pheromoneTexture.SetPixel((int) ant.coordinates.x,
+                                          (int) ant.coordinates.y,
+                                          COLOR.pheroToFood);
+            }
+
             // Update ant
             ants[antIdx] = ant;
         }
@@ -133,5 +162,10 @@ public class AntManager : MonoBehaviour
         }
 
         return antsCoordinates;
+    }
+
+    public Texture2D GetPheromoneTexture()
+    {
+        return pheromoneTexture;
     }
 }

@@ -9,6 +9,7 @@ static class CONST
     public static Vector2Int homeCoordinates = new Vector2Int(width / 2, height / 2);
 
     public static float bluringFactor = 0.9f;
+    public static float frameEvaporation = 0.1f;
 
     public static float antYawRate = 180.0f * Mathf.Deg2Rad;
 

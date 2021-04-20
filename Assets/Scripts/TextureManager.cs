@@ -144,6 +144,31 @@ public class TextureManager : MonoBehaviour
         }
     }
 
+    private void DrawPheromones()
+    {
+        Texture2D pheromoneTexture = antManager.GetPheromoneTexture();
+        Color pixelColor;
+
+        for (int i = 0; i < CONST.width; i++)
+        {
+            for (int j = 0; j < CONST.height; j++)
+            {
+                pixelColor = pheromoneTexture.GetPixel(i, j);
+
+                // Decay pheromones
+                if (pixelColor != COLOR.empty)
+                {
+                    pixelColor.r = Mathf.Max(0.0f, pixelColor.r - CONST.frameEvaporation);
+                    pixelColor.g = Mathf.Max(0.0f, pixelColor.g - CONST.frameEvaporation);
+                    pixelColor.b = Mathf.Max(0.0f, pixelColor.b - CONST.frameEvaporation);
+                }
+
+                pheromoneTexture.SetPixel(i, j, pixelColor);
+                texture.SetPixel(i, j, texture.GetPixel(i, j) + pixelColor);
+            }
+        }
+    }
+
     private void DrawAnts()
     {
         List<Vector2> antsCoordinates = antManager.GetAntsCoordinates();
@@ -166,6 +191,9 @@ public class TextureManager : MonoBehaviour
     {
         // Blur texture
         BlurTexture();
+
+        // Draw pheromones
+        DrawPheromones();
 
         // Draw resources
         DrawResources();
