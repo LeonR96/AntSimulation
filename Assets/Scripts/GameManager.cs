@@ -6,16 +6,25 @@ static class CONST
 {
     public static int width = 128;
     public static int height = width;
+    public static Vector2Int homeCoordinates = new Vector2Int(width / 2, height / 2);
 
+    public static int bluringRay = 1;
     public static float bluringFactor = 0.9f;
-
-    public static Color antColor = Color.white;
-    public static Color resourceColor = Color.yellow;
-    public static Color homeColor = Color.red;
+    public static float frameEvaporation = 0.01f;
 
     public static float antYawRate = 180.0f * Mathf.Deg2Rad;
 
     public static float deltaTime = 0.0f;
+}
+
+static class COLOR
+{
+    public static Color empty = Color.black;
+    public static Color ant = Color.white;
+    public static Color pheroToFood = Color.red;
+    public static Color pheroToHome = Color.blue;
+    public static Color resource = Color.yellow;
+    public static Color home = Color.green;
 }
 
 public struct Ant
@@ -46,6 +55,8 @@ public class GameManager : MonoBehaviour
         resourceManager.InitializeResources();
 
         AssignManagers();
+
+        lastUpdateTimestamp = Time.time;
     }
 
     // Update is called once per frame

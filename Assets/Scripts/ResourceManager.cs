@@ -6,16 +6,16 @@ public class ResourceManager : MonoBehaviour
 {
     public int clusterQty;
 
+    private Texture2D resourcesTexture;
     private float clusterRadiusSquare = 100.0f;
-    private List<List<bool>> resourceStatuses = new List<List<bool>>();
 
     public void InitializeResources()
     {
+        Texture2D newTexture = new Texture2D(CONST.width,
+                                             CONST.height);
         int clusterIdx;
         List<Vector2Int> clusterCenters = new List<Vector2Int>();
         Vector2Int clusterCenter = new Vector2Int();
-        int i;
-        int j;
         float xOffset;
         float yOffset;
         float distanceToClusterCenterSquare;
@@ -29,21 +29,18 @@ public class ResourceManager : MonoBehaviour
             clusterCenters.Add(clusterCenter);
         }
 
-        for (i = 0; i < CONST.width; i++)
+        // Draw all resource pixels black
+        for (int i = 0; i < CONST.width; i++)
         {
-            List<bool> newResourceStatuses = new List<bool>();
-
-            for (j = 0; j < CONST.height; j++)
+            for (int j = 0; j < CONST.height; j++)
             {
-                newResourceStatuses.Add(false);
+                newTexture.SetPixel(i, j, COLOR.empty);
             }
-
-            resourceStatuses.Add(newResourceStatuses);
         }
 
-        for (i = 0; i < CONST.width; i++)
+        for (int i = 0; i < CONST.width; i++)
         {
-            for (j = 0; j < CONST.height; j++)
+            for (int j = 0; j < CONST.height; j++)
             {
                 for (clusterIdx = 0; clusterIdx < clusterQty; clusterIdx++)
                 {
@@ -54,43 +51,31 @@ public class ResourceManager : MonoBehaviour
 
                     distanceToClusterCenterSquare = xOffset * xOffset + yOffset * yOffset;
 
-                    // Store resource pixels
+                    // Draw resource pixels
                     if (distanceToClusterCenterSquare < clusterRadiusSquare)
                     {
-                        resourceStatuses[i][j] = true;
+                        newTexture.SetPixel(i, j, COLOR.resource);
                     }
                 }
             }
         }
+
+        // Store initialized resources texture
+        resourcesTexture = newTexture;
     }
 
-    public List<Vector2Int> GetResourcesCoordinates()
+    public Texture2D GetResourcesTexture()
     {
-        List<Vector2Int> resourcesCoordinates = new List<Vector2Int>();
-        int i;
-        int j;
-
-        for (i = 0; i < CONST.width; i++)
-        {
-            for (j = 0; j < CONST.height; j++)
-            {
-                if (resourceStatuses[i][j] == true)
-                {
-                    resourcesCoordinates.Add(new Vector2Int(i, j));
-                }
-            }
-        }
-
-        return resourcesCoordinates;
+        return resourcesTexture;
     }
 
     public bool GetResourceAtCoordinates(Vector2 coordinates)
     {
-        return resourceStatuses[(int) coordinates.x][(int) coordinates.y];
+        return (resourcesTexture.GetPixel((int) coordinates.x, (int) coordinates.y) == COLOR.resource);
     }
 
     public void RemoveResourceAtCoordinates(Vector2 coordinates)
     {
-        resourceStatuses[(int) coordinates.x][(int) coordinates.y] = false;
+        resourcesTexture.SetPixel((int) coordinates.x, (int) coordinates.y, COLOR.empty);
     }
 }

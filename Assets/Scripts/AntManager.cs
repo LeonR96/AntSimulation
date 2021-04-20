@@ -7,10 +7,13 @@ public class AntManager : MonoBehaviour
     public int antQty;
 
     private List<Ant> ants = new List<Ant>();
-    private Vector2 homeCoordinates = new Vector2();
+    private Texture2D pheromoneTexture;
 
     public void InitializeAnts()
     {
+        Texture2D newTexture = new Texture2D(CONST.width,
+                                             CONST.height);
+
         for (int antIdx = 0 ; antIdx < antQty; antIdx++)
         {
             Ant newAnt = new Ant();
@@ -23,8 +26,17 @@ public class AntManager : MonoBehaviour
             ants.Add(newAnt);
         }
 
-        homeCoordinates.x = CONST.width / 2;
-        homeCoordinates.y = CONST.height / 2;
+        // Draw all pheromone pixels black
+        for (int i = 0; i < CONST.width; i++)
+        {
+            for (int j = 0; j < CONST.height; j++)
+            {
+                newTexture.SetPixel(i, j, COLOR.empty);
+            }
+        }
+
+        // Store pheromone texture
+        pheromoneTexture = newTexture;
     }
 
     private void BounceAnt(ref Ant ant)
@@ -62,7 +74,78 @@ public class AntManager : MonoBehaviour
         }
     }
 
-    public void UpdateAnts()
+    private void UpdatePheromones()
+    {
+        Texture2D bluredTexture = new Texture2D(CONST.width, CONST.height);
+        int iMax = CONST.width - CONST.bluringRay;
+        int jMax = CONST.height - CONST.bluringRay;
+        int bluringWindow = 1 + 2 * CONST.bluringRay;
+        float bluringFactor = 1.0f / ((float) (bluringWindow * bluringWindow));
+        Color [] windowColor;
+        Color bluredColor;
+
+        // Leave the side pixels empty
+        if (CONST.width == CONST.height)
+        {
+            for(int i = 0; i < CONST.width; i++)
+            {
+                bluredTexture.SetPixel(i, 0, COLOR.empty);
+                bluredTexture.SetPixel(i, jMax, COLOR.empty);
+                bluredTexture.SetPixel(0, i, COLOR.empty);
+                bluredTexture.SetPixel(iMax, i, COLOR.empty);
+            }
+        }
+        else
+        {
+            for(int i = 0; i < CONST.width; i++)
+            {
+                bluredTexture.SetPixel(i, 0, COLOR.empty);
+                bluredTexture.SetPixel(i, jMax, COLOR.empty);
+            }
+
+            for(int j = 0; j < CONST.height; j++)
+            {
+                bluredTexture.SetPixel(0, j, COLOR.empty);
+                bluredTexture.SetPixel(jMax, j, COLOR.empty);
+            }
+        }
+
+        // Blur pheromones within a given window
+        for (int i = CONST.bluringRay; i < iMax; i++)
+        {
+            for (int j = CONST.bluringRay; j < jMax; j++)
+            {
+                bluredColor = COLOR.empty;
+
+                windowColor = pheromoneTexture.GetPixels(i - 1, j - 1, bluringWindow, bluringWindow);
+
+                for (int pixelIdx = 0; pixelIdx < windowColor.Length; pixelIdx++)
+                {
+                    bluredColor += windowColor[pixelIdx];
+                }
+
+                if (bluredColor != COLOR.empty)
+                {
+                    // Diffuse pheromone
+                    bluredColor.r *= bluringFactor;
+                    bluredColor.g *= bluringFactor;
+                    bluredColor.b *= bluringFactor;
+
+                    // Decay pheromone
+                    bluredColor.r = Mathf.Max(0.0f, bluredColor.r - CONST.frameEvaporation);
+                    bluredColor.g = Mathf.Max(0.0f, bluredColor.g - CONST.frameEvaporation);
+                    bluredColor.b = Mathf.Max(0.0f, bluredColor.b - CONST.frameEvaporation);
+                }
+
+                bluredTexture.SetPixel(i, j, bluredColor);
+            }
+        }
+
+        // Store the blured texture
+        pheromoneTexture = bluredTexture;
+    }
+
+    private void MoveAnts()
     {
         int antIdx;
         Ant ant;
@@ -81,7 +164,7 @@ public class AntManager : MonoBehaviour
             // Make sure the ant intends to go home if it is carrying a resource
             if (ant.hasResource == true)
             {
-                ant.intention = (homeCoordinates - ant.coordinates).normalized;
+                ant.intention = (CONST.homeCoordinates - ant.coordinates).normalized;
             }
 
             // Rotate ant if necessary
@@ -112,8 +195,8 @@ public class AntManager : MonoBehaviour
             }
 
             // Drop resource and reset intention once brought back home
-            if (    ( ant.hasResource                               == true )
-                 && ( (ant.coordinates - homeCoordinates).magnitude  < 1.0f ) )
+            if (    ( ant.hasResource                                     == true )
+                 && ( (ant.coordinates - CONST.homeCoordinates).magnitude  < 1.0f ) )
             {
                 ant.hasResource = false;
 
@@ -121,9 +204,29 @@ public class AntManager : MonoBehaviour
                                             Random.Range(-1.0f, 1.0f)).normalized;
             }
 
+            if (ant.hasResource == true)
+            {
+                pheromoneTexture.SetPixel((int) ant.coordinates.x,
+                                          (int) ant.coordinates.y,
+                                          COLOR.pheroToHome);
+            }
+            else
+            {
+                pheromoneTexture.SetPixel((int) ant.coordinates.x,
+                                          (int) ant.coordinates.y,
+                                          COLOR.pheroToFood);
+            }
+
             // Update ant
             ants[antIdx] = ant;
         }
+    }
+
+    public void UpdateAnts()
+    {
+        UpdatePheromones();
+
+        MoveAnts();
     }
 
     public List<Vector2> GetAntsCoordinates()
@@ -139,8 +242,8 @@ public class AntManager : MonoBehaviour
         return antsCoordinates;
     }
 
-    public Vector2Int GetHomeCoordinates()
+    public Texture2D GetPheromoneTexture()
     {
-        return new Vector2Int((int) homeCoordinates.x, (int) homeCoordinates.y);
+        return pheromoneTexture;
     }
 }
