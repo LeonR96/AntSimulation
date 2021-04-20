@@ -150,7 +150,6 @@ public class TextureManager : MonoBehaviour
         int antIdx;
         int i;
         int j;
-        Vector2Int homeCoordinates = antManager.GetHomeCoordinates();
 
         for (antIdx = 0; antIdx < antsCoordinates.Count; antIdx++)
         {
@@ -160,7 +159,7 @@ public class TextureManager : MonoBehaviour
             texture.SetPixel(i, j, COLOR.ant);
         }
 
-        texture.SetPixel(homeCoordinates.x, homeCoordinates.y, COLOR.home);
+        texture.SetPixel(CONST.homeCoordinates.x, CONST.homeCoordinates.y, COLOR.home);
     }
 
     public void UpdateTexture()

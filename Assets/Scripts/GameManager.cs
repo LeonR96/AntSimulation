@@ -6,6 +6,7 @@ static class CONST
 {
     public static int width = 128;
     public static int height = width;
+    public static Vector2Int homeCoordinates = new Vector2Int(width / 2, height / 2);
 
     public static float bluringFactor = 0.9f;
 

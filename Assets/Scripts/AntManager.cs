@@ -7,7 +7,6 @@ public class AntManager : MonoBehaviour
     public int antQty;
 
     private List<Ant> ants = new List<Ant>();
-    private Vector2 homeCoordinates = new Vector2();
 
     public void InitializeAnts()
     {
@@ -22,9 +21,6 @@ public class AntManager : MonoBehaviour
 
             ants.Add(newAnt);
         }
-
-        homeCoordinates.x = CONST.width / 2;
-        homeCoordinates.y = CONST.height / 2;
     }
 
     private void BounceAnt(ref Ant ant)
@@ -81,7 +77,7 @@ public class AntManager : MonoBehaviour
             // Make sure the ant intends to go home if it is carrying a resource
             if (ant.hasResource == true)
             {
-                ant.intention = (homeCoordinates - ant.coordinates).normalized;
+                ant.intention = (CONST.homeCoordinates - ant.coordinates).normalized;
             }
 
             // Rotate ant if necessary
@@ -112,8 +108,8 @@ public class AntManager : MonoBehaviour
             }
 
             // Drop resource and reset intention once brought back home
-            if (    ( ant.hasResource                               == true )
-                 && ( (ant.coordinates - homeCoordinates).magnitude  < 1.0f ) )
+            if (    ( ant.hasResource                                     == true )
+                 && ( (ant.coordinates - CONST.homeCoordinates).magnitude  < 1.0f ) )
             {
                 ant.hasResource = false;
 
@@ -137,10 +133,5 @@ public class AntManager : MonoBehaviour
         }
 
         return antsCoordinates;
-    }
-
-    public Vector2Int GetHomeCoordinates()
-    {
-        return new Vector2Int((int) homeCoordinates.x, (int) homeCoordinates.y);
     }
 }
