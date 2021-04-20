@@ -117,7 +117,6 @@ public class AntManager : MonoBehaviour
             {
                 bluredColor = COLOR.empty;
 
-                // Diffuse pheromone
                 windowColor = pheromoneTexture.GetPixels(i - 1, j - 1, bluringWindow, bluringWindow);
 
                 for (int pixelIdx = 0; pixelIdx < windowColor.Length; pixelIdx++)
@@ -125,13 +124,14 @@ public class AntManager : MonoBehaviour
                     bluredColor += windowColor[pixelIdx];
                 }
 
-                bluredColor.r *= bluringFactor;
-                bluredColor.g *= bluringFactor;
-                bluredColor.b *= bluringFactor;
-
-                // Decay pheromones
                 if (bluredColor != COLOR.empty)
                 {
+                    // Diffuse pheromone
+                    bluredColor.r *= bluringFactor;
+                    bluredColor.g *= bluringFactor;
+                    bluredColor.b *= bluringFactor;
+
+                    // Decay pheromone
                     bluredColor.r = Mathf.Max(0.0f, bluredColor.r - CONST.frameEvaporation);
                     bluredColor.g = Mathf.Max(0.0f, bluredColor.g - CONST.frameEvaporation);
                     bluredColor.b = Mathf.Max(0.0f, bluredColor.b - CONST.frameEvaporation);
