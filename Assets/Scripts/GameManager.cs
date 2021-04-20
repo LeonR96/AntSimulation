@@ -8,8 +8,9 @@ static class CONST
     public static int height = width;
     public static Vector2Int homeCoordinates = new Vector2Int(width / 2, height / 2);
 
+    public static int bluringRay = 1;
     public static float bluringFactor = 0.9f;
-    public static float frameEvaporation = 0.1f;
+    public static float frameEvaporation = 0.01f;
 
     public static float antYawRate = 180.0f * Mathf.Deg2Rad;
 
@@ -54,6 +55,8 @@ public class GameManager : MonoBehaviour
         resourceManager.InitializeResources();
 
         AssignManagers();
+
+        lastUpdateTimestamp = Time.time;
     }
 
     // Update is called once per frame

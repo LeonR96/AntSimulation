@@ -15,11 +15,11 @@ public class TextureManager : MonoBehaviour
                                              CONST.height);
 
         // Draw all pixels black
-        for (int i = 0; i < newTexture.width; i++)
+        for (int i = 0; i < CONST.width; i++)
         {
-            for (int j = 0; j < newTexture.height; j++)
+            for (int j = 0; j < CONST.height; j++)
             {
-                newTexture.SetPixel(i, j, Color.black);
+                newTexture.SetPixel(i, j, COLOR.empty);
             }
         }
 
@@ -34,12 +34,10 @@ public class TextureManager : MonoBehaviour
     private Texture2D StoreTexture()
     {
         Texture2D oldTexture = new Texture2D(CONST.width, CONST.height);
-        int i;
-        int j;
 
-        for (i = 0; i < texture.width; i++)
+        for (int i = 0; i < texture.width; i++)
         {
-            for (j = 0; j < texture.height; j++)
+            for (int j = 0; j < texture.height; j++)
             {
                 oldTexture.SetPixel(i, j, texture.GetPixel(i, j));
             }
@@ -51,16 +49,14 @@ public class TextureManager : MonoBehaviour
     private void BlurTexture()
     {
         Texture2D oldTexture = StoreTexture();
-        int i;
-        int j;
         Color pixelColor;
         Color sidePixelColor;
         int binQty;
         float colorScaling;
 
-        for (i = 0; i < texture.width; i++)
+        for (int i = 0; i < texture.width; i++)
         {
-            for (j = 0; j < texture.height; j++)
+            for (int j = 0; j < texture.height; j++)
             {
                 pixelColor = oldTexture.GetPixel(i, j);
 
@@ -131,6 +127,19 @@ public class TextureManager : MonoBehaviour
         }
     }
 
+    private void DrawPheromones()
+    {
+        Texture2D pheromoneTexture = antManager.GetPheromoneTexture();
+
+        for (int i = 0; i < CONST.width; i++)
+        {
+            for (int j = 0; j < CONST.height; j++)
+            {
+                texture.SetPixel(i, j, pheromoneTexture.GetPixel(i, j));
+            }
+        }
+    }
+
     private void DrawResources()
     {
         Texture2D resourcesTexture = resourceManager.GetResourcesTexture();
@@ -144,39 +153,13 @@ public class TextureManager : MonoBehaviour
         }
     }
 
-    private void DrawPheromones()
-    {
-        Texture2D pheromoneTexture = antManager.GetPheromoneTexture();
-        Color pixelColor;
-
-        for (int i = 0; i < CONST.width; i++)
-        {
-            for (int j = 0; j < CONST.height; j++)
-            {
-                pixelColor = pheromoneTexture.GetPixel(i, j);
-
-                // Decay pheromones
-                if (pixelColor != COLOR.empty)
-                {
-                    pixelColor.r = Mathf.Max(0.0f, pixelColor.r - CONST.frameEvaporation);
-                    pixelColor.g = Mathf.Max(0.0f, pixelColor.g - CONST.frameEvaporation);
-                    pixelColor.b = Mathf.Max(0.0f, pixelColor.b - CONST.frameEvaporation);
-                }
-
-                pheromoneTexture.SetPixel(i, j, pixelColor);
-                texture.SetPixel(i, j, texture.GetPixel(i, j) + pixelColor);
-            }
-        }
-    }
-
     private void DrawAnts()
     {
         List<Vector2> antsCoordinates = antManager.GetAntsCoordinates();
-        int antIdx;
         int i;
         int j;
 
-        for (antIdx = 0; antIdx < antsCoordinates.Count; antIdx++)
+        for (int antIdx = 0; antIdx < antsCoordinates.Count; antIdx++)
         {
             i = (int) antsCoordinates[antIdx].x;
             j = (int) antsCoordinates[antIdx].y;
@@ -189,9 +172,6 @@ public class TextureManager : MonoBehaviour
 
     public void UpdateTexture()
     {
-        // Blur texture
-        BlurTexture();
-
         // Draw pheromones
         DrawPheromones();
 

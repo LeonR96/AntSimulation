@@ -74,6 +74,77 @@ public class AntManager : MonoBehaviour
         }
     }
 
+    private void UpdatePheromones()
+    {
+        Texture2D bluredTexture = new Texture2D(CONST.width, CONST.height);
+        int iMax = CONST.width - CONST.bluringRay;
+        int jMax = CONST.height - CONST.bluringRay;
+        int bluringWindow = 1 + 2 * CONST.bluringRay;
+        float bluringFactor = 1.0f / ((float) (bluringWindow * bluringWindow));
+        Color [] windowColor;
+        Color bluredColor;
+
+        // Leave the side pixels empty
+        if (CONST.width == CONST.height)
+        {
+            for(int i = 0; i < CONST.width; i++)
+            {
+                bluredTexture.SetPixel(i, 0, COLOR.empty);
+                bluredTexture.SetPixel(i, jMax, COLOR.empty);
+                bluredTexture.SetPixel(0, i, COLOR.empty);
+                bluredTexture.SetPixel(iMax, i, COLOR.empty);
+            }
+        }
+        else
+        {
+            for(int i = 0; i < CONST.width; i++)
+            {
+                bluredTexture.SetPixel(i, 0, COLOR.empty);
+                bluredTexture.SetPixel(i, jMax, COLOR.empty);
+            }
+
+            for(int j = 0; j < CONST.height; j++)
+            {
+                bluredTexture.SetPixel(0, j, COLOR.empty);
+                bluredTexture.SetPixel(jMax, j, COLOR.empty);
+            }
+        }
+
+        // Blur pheromones within a given window
+        for (int i = CONST.bluringRay; i < iMax; i++)
+        {
+            for (int j = CONST.bluringRay; j < jMax; j++)
+            {
+                bluredColor = COLOR.empty;
+
+                // Diffuse pheromone
+                windowColor = pheromoneTexture.GetPixels(i - 1, j - 1, bluringWindow, bluringWindow);
+
+                for (int pixelIdx = 0; pixelIdx < windowColor.Length; pixelIdx++)
+                {
+                    bluredColor += windowColor[pixelIdx];
+                }
+
+                bluredColor.r *= bluringFactor;
+                bluredColor.g *= bluringFactor;
+                bluredColor.b *= bluringFactor;
+
+                // Decay pheromones
+                if (bluredColor != COLOR.empty)
+                {
+                    bluredColor.r = Mathf.Max(0.0f, bluredColor.r - CONST.frameEvaporation);
+                    bluredColor.g = Mathf.Max(0.0f, bluredColor.g - CONST.frameEvaporation);
+                    bluredColor.b = Mathf.Max(0.0f, bluredColor.b - CONST.frameEvaporation);
+                }
+
+                bluredTexture.SetPixel(i, j, bluredColor);
+            }
+        }
+
+        // Store the blured texture
+        pheromoneTexture = bluredTexture;
+    }
+
     public void UpdateAnts()
     {
         int antIdx;
@@ -82,6 +153,8 @@ public class AntManager : MonoBehaviour
         float intentionAngle;
         float deltaAngle;
         float newDirectionAngle;
+
+        UpdatePheromones();
 
         for (antIdx = 0; antIdx < ants.Count; antIdx++)
         {
