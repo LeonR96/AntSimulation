@@ -149,10 +149,7 @@ public class AntManager : MonoBehaviour
     {
         int antIdx;
         Ant ant;
-        float directionAngle;
-        float intentionAngle;
         float deltaAngle;
-        float deltaAngleClamped;
         float newDirectionAngle;
 
         for (antIdx = 0; antIdx < ants.Count; antIdx++)
@@ -173,11 +170,11 @@ public class AntManager : MonoBehaviour
 
             if (Mathf.Abs(deltaAngle) > CONST.almostZero)
             {
-                deltaAngleClamped = Mathf.Clamp(deltaAngle,
-                                                -CONST.antYawRate * CONST.deltaTime,
-                                                CONST.antYawRate * CONST.deltaTime);
+                deltaAngle = Mathf.Clamp(deltaAngle,
+                                         -CONST.antYawRate * CONST.deltaTime,
+                                         CONST.antYawRate * CONST.deltaTime);
 
-                newDirectionAngle = (Vector2.SignedAngle(Vector2.right, ant.direction) + deltaAngleClamped) * Mathf.Deg2Rad;
+                newDirectionAngle = (Vector2.SignedAngle(Vector2.right, ant.direction) + deltaAngle) * Mathf.Deg2Rad;
 
                 ant.direction = new Vector2(Mathf.Cos(newDirectionAngle), Mathf.Sin(newDirectionAngle));
             }
