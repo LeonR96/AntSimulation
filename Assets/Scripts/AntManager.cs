@@ -22,6 +22,7 @@ public class AntManager : MonoBehaviour
             newAnt.intention = new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
             newAnt.direction = newAnt.intention;
             newAnt.hasResource = false;
+            newAnt.nextRandomizationTimestamp = Time.time + Random.Range(ANT.randomizationPeriodMin, ANT.randomizationPeriodMax);
 
             ants.Add(newAnt);
         }
@@ -145,6 +146,26 @@ public class AntManager : MonoBehaviour
         pheromoneTexture = bluredTexture;
     }
 
+    private void UpdateAntIntention(ref Ant ant)
+    {
+        // Make sure the ant intends to go home if it is carrying a resource
+        if (ant.hasResource == true)
+        {
+            ant.intention = (CONST.homeCoordinates - ant.coordinates).normalized;
+        }
+        else
+        {
+            if (Time.time > ant.nextRandomizationTimestamp)
+            {
+                // Randomize intention
+                ant.intention = Random.insideUnitCircle.normalized;
+
+                // Randomize next randomization timestamp
+                ant.nextRandomizationTimestamp = Time.time + Random.Range(ANT.randomizationPeriodMin, ANT.randomizationPeriodMax);
+            }
+        }
+    }
+
     private void MoveAnts()
     {
         int antIdx;
@@ -159,11 +180,8 @@ public class AntManager : MonoBehaviour
             // Handle limit rebound if necessary
             BounceAnt(ref ant);
 
-            // Make sure the ant intends to go home if it is carrying a resource
-            if (ant.hasResource == true)
-            {
-                ant.intention = (CONST.homeCoordinates - ant.coordinates).normalized;
-            }
+            // Update ant intention if necessary
+            UpdateAntIntention(ref ant);
 
             // Rotate ant if necessary
             deltaAngle = Vector2.SignedAngle(ant.direction, ant.intention);
@@ -171,8 +189,8 @@ public class AntManager : MonoBehaviour
             if (Mathf.Abs(deltaAngle) > CONST.almostZero)
             {
                 deltaAngle = Mathf.Clamp(deltaAngle,
-                                         -CONST.antYawRate * CONST.deltaTime,
-                                         CONST.antYawRate * CONST.deltaTime);
+                                         -ANT.yawRate * CONST.deltaTime,
+                                         ANT.yawRate * CONST.deltaTime);
 
                 newDirectionAngle = (Vector2.SignedAngle(Vector2.right, ant.direction) + deltaAngle) * Mathf.Deg2Rad;
 
