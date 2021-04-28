@@ -20,6 +20,9 @@ static class CONST
 static class ANT
 {
     public static float yawRate = 90.0f;
+    public static float fovAngleHalf = 60.0f;
+    public static int fovRange = 5;
+    public static float minPheromoneStrength = 0.1f;
 
     public static float randomizationPeriodMin = 2.0f;
     public static float randomizationPeriodMax = 3.0f;

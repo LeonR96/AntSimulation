@@ -169,8 +169,87 @@ public class AntManager : MonoBehaviour
         pheromoneTexture = bluredTexture;
     }
 
+    private void ScanFieldOfView(ref Ant ant)
+    {
+        List<Vector2Int> pixelsInFov = new List<Vector2Int>();
+        int iAnt = (int) ant.coordinates.x;
+        int jAnt = (int) ant.coordinates.y;
+        int iMin = Mathf.Min(iAnt - ANT.fovRange, 0);
+        int iMax = Mathf.Max(iAnt + ANT.fovRange + 1, CONST.width);
+        int jMin = Mathf.Min(jAnt - ANT.fovRange, 0);
+        int jMax = Mathf.Max(jAnt + ANT.fovRange + 1, CONST.height);
+        float antDirection = Vector2.SignedAngle(Vector2.right, ant.direction);
+        float fovMinAngle = (antDirection - ANT.fovAngleHalf) * Mathf.Deg2Rad;
+        float fovMaxAngle = (antDirection + ANT.fovAngleHalf) * Mathf.Deg2Rad;
+        Vector2 fovMinEdge = ant.coordinates + ANT.fovRange * (new Vector2(Mathf.Cos(fovMinAngle), Mathf.Sin(fovMinAngle)));
+        Vector2 fovMaxEdge = ant.coordinates + ANT.fovRange * (new Vector2(Mathf.Cos(fovMaxAngle), Mathf.Sin(fovMaxAngle)));
+        bool isPheromoneFound;
+        float oldestPheromoneStrength;
+        float pheromoneStrength;
+        int iOldestPheromone;
+        int jOldestPheromone;
+
+        // Reduce window to the field of view
+        iMin = Mathf.Max(iMin,
+                         Mathf.Min((int) fovMinEdge.x,
+                                   (int) fovMaxEdge.x));
+        iMax = Mathf.Min(iMax,
+                         Mathf.Max((int) fovMinEdge.x,
+                                   (int) fovMaxEdge.x));
+        jMin = Mathf.Max(jMin,
+                         Mathf.Min((int) fovMinEdge.y,
+                                   (int) fovMaxEdge.y));
+        jMax = Mathf.Min(jMax,
+                         Mathf.Max((int) fovMinEdge.y,
+                                   (int) fovMaxEdge.y));
+
+        // Initialize oldest pheromone
+        isPheromoneFound = false;
+        oldestPheromoneStrength = 1.0f;
+        iOldestPheromone = 0;
+        jOldestPheromone = 0;
+
+        for (int i = iMin; i < iMax; i++)
+        {
+            for (int j = jMin; j < jMax; j++)
+            {
+                if (    ( i != iAnt )
+                        || ( j != jAnt ) )
+                {
+                    if (ant.hasResource == false)
+                    {
+                        // Look for home-going trails
+                        pheromoneStrength = pheromoneTexture.GetPixel(i, j).b;
+                    }
+                    else
+                    {
+                        // Look for food-searching trails
+                        pheromoneStrength = pheromoneTexture.GetPixel(i, j).r;
+                    }
+
+                    if (    ( pheromoneStrength > ANT.minPheromoneStrength )
+                         && ( pheromoneStrength < oldestPheromoneStrength  ) )
+                    {
+                        isPheromoneFound = true;
+
+                        // Store oldest pheromone in field of view coordinates
+                        iOldestPheromone = i;
+                        jOldestPheromone = j;
+                    }
+                }
+            }
+        }
+
+        if (isPheromoneFound == true)
+        {
+            pheromoneTexture.SetPixel(iOldestPheromone, jOldestPheromone, Color.green);
+        }
+    }
+
     private void UpdateAntIntention(ref Ant ant)
     {
+        ScanFieldOfView(ref ant);
+
         // Make sure the ant intends to go home if it is carrying a resource
         if (ant.hasResource == true)
         {
