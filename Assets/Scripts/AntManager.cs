@@ -112,33 +112,56 @@ public class AntManager : MonoBehaviour
         }
 
         // Blur pheromones within a given window
-        for (int i = CONST.bluringRay; i < iMax; i++)
+        if (CONST.bluringRay > 0)
         {
-            for (int j = CONST.bluringRay; j < jMax; j++)
+            for (int i = CONST.bluringRay; i < iMax; i++)
             {
-                bluredColor = COLOR.empty;
-
-                windowColor = pheromoneTexture.GetPixels(i - 1, j - 1, bluringWindow, bluringWindow);
-
-                for (int pixelIdx = 0; pixelIdx < windowColor.Length; pixelIdx++)
+                for (int j = CONST.bluringRay; j < jMax; j++)
                 {
-                    bluredColor += windowColor[pixelIdx];
-                }
+                    bluredColor = COLOR.empty;
 
-                if (bluredColor != COLOR.empty)
+                    windowColor = pheromoneTexture.GetPixels(i - 1, j - 1, bluringWindow, bluringWindow);
+
+                    for (int pixelIdx = 0; pixelIdx < windowColor.Length; pixelIdx++)
+                    {
+                        bluredColor += windowColor[pixelIdx];
+                    }
+
+                    if (bluredColor != COLOR.empty)
+                    {
+                        // Diffuse pheromone
+                        bluredColor.r *= bluringFactor;
+                        bluredColor.g *= bluringFactor;
+                        bluredColor.b *= bluringFactor;
+
+                        // Decay pheromone
+                        bluredColor.r = Mathf.Max(0.0f, bluredColor.r - CONST.frameEvaporation);
+                        bluredColor.g = Mathf.Max(0.0f, bluredColor.g - CONST.frameEvaporation);
+                        bluredColor.b = Mathf.Max(0.0f, bluredColor.b - CONST.frameEvaporation);
+                    }
+
+                    bluredTexture.SetPixel(i, j, bluredColor);
+                }
+            }
+        }
+        else
+        {
+            for (int i = CONST.bluringRay; i < iMax; i++)
+            {
+                for (int j = CONST.bluringRay; j < jMax; j++)
                 {
-                    // Diffuse pheromone
-                    bluredColor.r *= bluringFactor;
-                    bluredColor.g *= bluringFactor;
-                    bluredColor.b *= bluringFactor;
+                    bluredColor = pheromoneTexture.GetPixel(i, j);
 
-                    // Decay pheromone
-                    bluredColor.r = Mathf.Max(0.0f, bluredColor.r - CONST.frameEvaporation);
-                    bluredColor.g = Mathf.Max(0.0f, bluredColor.g - CONST.frameEvaporation);
-                    bluredColor.b = Mathf.Max(0.0f, bluredColor.b - CONST.frameEvaporation);
+                    if (bluredColor != COLOR.empty)
+                    {
+                        // Decay pheromone
+                        bluredColor.r = Mathf.Max(0.0f, bluredColor.r - CONST.frameEvaporation);
+                        bluredColor.g = Mathf.Max(0.0f, bluredColor.g - CONST.frameEvaporation);
+                        bluredColor.b = Mathf.Max(0.0f, bluredColor.b - CONST.frameEvaporation);
+                    }
+
+                    bluredTexture.SetPixel(i, j, bluredColor);
                 }
-
-                bluredTexture.SetPixel(i, j, bluredColor);
             }
         }
 

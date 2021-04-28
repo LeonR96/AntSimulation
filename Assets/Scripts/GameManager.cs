@@ -8,9 +8,9 @@ static class CONST
     public static int height = width;
     public static Vector2Int homeCoordinates = new Vector2Int(width / 2, height / 2);
 
-    public static int bluringRay = 1;
+    public static int bluringRay = 0;
     public static float bluringFactor = 0.9f;
-    public static float frameEvaporation = 0.01f;
+    public static float frameEvaporation = 0.1f;
 
     public static float almostZero = 1.0E-6f;
 
