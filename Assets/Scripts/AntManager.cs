@@ -152,6 +152,7 @@ public class AntManager : MonoBehaviour
         float directionAngle;
         float intentionAngle;
         float deltaAngle;
+        float deltaAngleClamped;
         float newDirectionAngle;
 
         for (antIdx = 0; antIdx < ants.Count; antIdx++)
@@ -168,16 +169,15 @@ public class AntManager : MonoBehaviour
             }
 
             // Rotate ant if necessary
-            if (ant.direction != ant.intention)
+            deltaAngle = Vector2.SignedAngle(ant.direction, ant.intention);
+
+            if (Mathf.Abs(deltaAngle) > CONST.almostZero)
             {
-                directionAngle = Mathf.Atan2(ant.direction.y, ant.direction.x);
-                intentionAngle = Mathf.Atan2(ant.intention.y, ant.intention.x);
+                deltaAngleClamped = Mathf.Clamp(deltaAngle,
+                                                -CONST.antYawRate * CONST.deltaTime,
+                                                CONST.antYawRate * CONST.deltaTime);
 
-                deltaAngle = Mathf.Clamp(Mathf.DeltaAngle(directionAngle, intentionAngle),
-                                         -CONST.antYawRate * CONST.deltaTime,
-                                         CONST.antYawRate * CONST.deltaTime);
-
-                newDirectionAngle = directionAngle + deltaAngle;
+                newDirectionAngle = (Vector2.SignedAngle(Vector2.right, ant.direction) + deltaAngleClamped) * Mathf.Deg2Rad;
 
                 ant.direction = new Vector2(Mathf.Cos(newDirectionAngle), Mathf.Sin(newDirectionAngle));
             }
