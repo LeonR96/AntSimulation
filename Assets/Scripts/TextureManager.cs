@@ -34,18 +34,38 @@ public class TextureManager : MonoBehaviour
     private void DrawAnts()
     {
         List<Vector2> antsCoordinates = antManager.GetAntsCoordinates();
-        int i;
-        int j;
+        int iAnt;
+        int jAnt;
 
         for (int antIdx = 0; antIdx < antsCoordinates.Count; antIdx++)
         {
-            i = (int) antsCoordinates[antIdx].x;
-            j = (int) antsCoordinates[antIdx].y;
+            iAnt = (int) antsCoordinates[antIdx].x;
+            jAnt = (int) antsCoordinates[antIdx].y;
 
-            texture.SetPixel(i, j, COLOR.ant);
+            texture.SetPixel(iAnt, jAnt, COLOR.ant);
         }
+    }
 
-        texture.SetPixel(CONST.homeCoordinates.x, CONST.homeCoordinates.y, COLOR.home);
+    private void DrawHome()
+    {
+        int iHome = CONST.homeCoordinates.x;
+        int jHome = CONST.homeCoordinates.y;
+        int radiusSquare = CONST.homeRadius * CONST.homeRadius;
+        int iMin = Mathf.Max(iHome - CONST.homeRadius, 0);
+        int iMax = Mathf.Min(iHome + CONST.homeRadius + 1, CONST.width);
+        int jMin = Mathf.Max(jHome - CONST.homeRadius, 0);
+        int jMax = Mathf.Min(jHome + CONST.homeRadius + 1, CONST.height);
+
+        for (int i = iMin; i < iMax; i++)
+        {
+            for (int j = jMin; j < jMax; j++)
+            {
+                if (antManager.IsHome(i, j) == true)
+                {
+                    texture.SetPixel(i, j, COLOR.home);
+                }
+            }
+        }
     }
 
     public void UpdateTexture()
@@ -64,6 +84,9 @@ public class TextureManager : MonoBehaviour
 
         // Draw ants
         DrawAnts();
+
+        // Draw home
+        DrawHome();
 
         // Apply updated texture
         texture.Apply();

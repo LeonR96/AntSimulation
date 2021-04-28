@@ -40,6 +40,20 @@ public class AntManager : MonoBehaviour
         pheromoneTexture = newTexture;
     }
 
+    public bool IsHome(int i, int j)
+    {
+        bool isHome = false;
+        int iDiff = i - CONST.homeCoordinates.x;
+        int jDiff = j - CONST.homeCoordinates.x;
+
+        if (((iDiff * iDiff) + (jDiff * jDiff)) < (CONST.homeRadius * CONST.homeRadius))
+        {
+            isHome = true;
+        }
+
+        return isHome;
+    }
+
     private void BounceAnt(ref Ant ant)
     {
         bool didAntBounce = false;
@@ -171,6 +185,7 @@ public class AntManager : MonoBehaviour
 
     private void ScanFieldOfView(ref Ant ant)
     {
+        Texture2D resourceTexture = resourceManager.GetResourcesTexture();
         List<Vector2Int> pixelsInFov = new List<Vector2Int>();
         int iAnt = (int) ant.coordinates.x;
         int jAnt = (int) ant.coordinates.y;
@@ -183,11 +198,11 @@ public class AntManager : MonoBehaviour
         float fovMaxAngle = (antDirection + ANT.fovAngleHalf) * Mathf.Deg2Rad;
         Vector2 fovMinEdge = ant.coordinates + ANT.fovRange * (new Vector2(Mathf.Cos(fovMinAngle), Mathf.Sin(fovMinAngle)));
         Vector2 fovMaxEdge = ant.coordinates + ANT.fovRange * (new Vector2(Mathf.Cos(fovMaxAngle), Mathf.Sin(fovMaxAngle)));
+        bool isTargetFound;
         bool isPheromoneFound;
         float oldestPheromoneStrength;
         float pheromoneStrength;
-        int iOldestPheromone;
-        int jOldestPheromone;
+        Vector2 newIntentionCoordinates = new Vector2();
 
         // Reduce window to the field of view
         iMin = Mathf.Max(iMin,
@@ -206,25 +221,55 @@ public class AntManager : MonoBehaviour
         // Initialize oldest pheromone
         isPheromoneFound = false;
         oldestPheromoneStrength = 1.0f;
-        iOldestPheromone = 0;
-        jOldestPheromone = 0;
 
-        for (int i = iMin; i < iMax; i++)
+        // Initialize prioritary target status
+        isTargetFound = false;
+
+        for (int i = iMin; (i < iMax) && (isTargetFound == false); i++)
         {
-            for (int j = jMin; j < jMax; j++)
+            for (int j = jMin; (j < jMax) && (isTargetFound == false); j++)
             {
                 if (    ( i != iAnt )
-                        || ( j != jAnt ) )
+                     || ( j != jAnt ) )
                 {
                     if (ant.hasResource == false)
                     {
-                        // Look for home-going trails
-                        pheromoneStrength = pheromoneTexture.GetPixel(i, j).b;
+                        if (resourceTexture.GetPixel(i, j) == COLOR.resource)
+                        {
+                            // Prioritary target found
+                            isTargetFound = true;
+
+                            // Store resource coordinates
+                            newIntentionCoordinates.x = (float) i;
+                            newIntentionCoordinates.y = (float) j;
+
+                            // Stop looking further
+                            break;
+                        }
+                        else
+                        {
+                            // Look for home-going trails
+                            pheromoneStrength = pheromoneTexture.GetPixel(i, j).b;
+                        }
                     }
                     else
                     {
-                        // Look for food-searching trails
-                        pheromoneStrength = pheromoneTexture.GetPixel(i, j).r;
+                        if (IsHome(i, j) == true)
+                        {
+                            // Prioritary target found
+                            isTargetFound = true;
+
+                            // Store home coordinates
+                            newIntentionCoordinates = CONST.homeCoordinates;
+
+                            // Stop looking further
+                            break;
+                        }
+                        else
+                        {
+                            // Look for food-searching trails
+                            pheromoneStrength = pheromoneTexture.GetPixel(i, j).r;
+                        }
                     }
 
                     if (    ( pheromoneStrength > ANT.minPheromoneStrength )
@@ -233,16 +278,18 @@ public class AntManager : MonoBehaviour
                         isPheromoneFound = true;
 
                         // Store oldest pheromone in field of view coordinates
-                        iOldestPheromone = i;
-                        jOldestPheromone = j;
+                        newIntentionCoordinates.x = (float) i;
+                        newIntentionCoordinates.y = (float) j;
                     }
                 }
             }
         }
 
-        if (isPheromoneFound == true)
+        if (    ( isTargetFound    == true )
+             || ( isPheromoneFound == true ) )
         {
-            pheromoneTexture.SetPixel(iOldestPheromone, jOldestPheromone, Color.green);
+            // Intend going towards the oldest pheromone in field of view
+            ant.intention = (newIntentionCoordinates - ant.coordinates).normalized;
         }
     }
 
@@ -250,22 +297,14 @@ public class AntManager : MonoBehaviour
     {
         ScanFieldOfView(ref ant);
 
-        // Make sure the ant intends to go home if it is carrying a resource
-        if (ant.hasResource == true)
-        {
-            ant.intention = (CONST.homeCoordinates - ant.coordinates).normalized;
-        }
-        else
-        {
-            if (Time.time > ant.nextRandomizationTimestamp)
-            {
-                // Randomize intention
-                ant.intention = Random.insideUnitCircle.normalized;
-
-                // Randomize next randomization timestamp
-                ant.nextRandomizationTimestamp = Time.time + Random.Range(ANT.randomizationPeriodMin, ANT.randomizationPeriodMax);
-            }
-        }
+//        if (Time.time > ant.nextRandomizationTimestamp)
+//        {
+//            // Randomize intention
+//            ant.intention = Random.insideUnitCircle.normalized;
+//
+//            // Randomize next randomization timestamp
+//            ant.nextRandomizationTimestamp = Time.time + Random.Range(ANT.randomizationPeriodMin, ANT.randomizationPeriodMax);
+//        }
     }
 
     private void MoveAnts()
