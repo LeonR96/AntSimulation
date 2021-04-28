@@ -12,10 +12,17 @@ static class CONST
     public static float bluringFactor = 0.9f;
     public static float frameEvaporation = 0.01f;
 
-    public static float antYawRate = 180.0f;
     public static float almostZero = 1.0E-6f;
 
     public static float deltaTime = 0.0f;
+}
+
+static class ANT
+{
+    public static float yawRate = 90.0f;
+
+    public static float randomizationPeriodMin = 2.0f;
+    public static float randomizationPeriodMax = 3.0f;
 }
 
 static class COLOR
@@ -34,6 +41,7 @@ public struct Ant
     public Vector2 direction;
     public Vector2 intention;
     public bool hasResource;
+    public float nextRandomizationTimestamp;
 };
 
 public class GameManager : MonoBehaviour
