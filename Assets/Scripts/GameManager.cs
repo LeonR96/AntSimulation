@@ -12,7 +12,8 @@ static class CONST
     public static float bluringFactor = 0.9f;
     public static float frameEvaporation = 0.01f;
 
-    public static float antYawRate = 180.0f * Mathf.Deg2Rad;
+    public static float antYawRate = 180.0f;
+    public static float almostZero = 1.0E-6f;
 
     public static float deltaTime = 0.0f;
 }
